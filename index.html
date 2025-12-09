@@ -15,162 +15,313 @@
 
         <div class="spacer"></div>
         <pre><code id="log"></code></pre>
-        <h2>Color Sandbox</h2>
 
-        <!-- Color Swatch and Values Display (Sticky Header) -->
-        <div class="color-header">
-            <!-- Unified overlay version -->
-            <div id="swatchOverlay" class="swatch-overlay-container" style="background: rgb(0, 0, 255);">
-                <div class="swatch-overlay-values">
-                    <h2 id="valRgb" class="code">rgb(0 0 255)</h2>
-                    <h2 id="valHex" class="code">#0000ff</h2>
-                    <h2 id="valHsl" class="code">hsl(240deg 100% 50%)</h2>
-                </div>
-            </div>
+        <div class="training-mode-selector" style="margin-bottom: 20px;">
+            <button id="modeSandbox" class="mode-btn active" onclick="switchMode('sandbox')">Sandbox</button>
+            <button id="modeChannelIsolation" class="mode-btn"
+                onclick="switchMode('channel-isolation')">Channel</button>
+            <button id="modeCodeFromSwatches" class="mode-btn" onclick="switchMode('code-to-swatch')">Code →
+                Swatch</button>
+            <button id="modeSwatchToCode" class="mode-btn" onclick="switchMode('swatch-to-code')">Swatch →
+                Code</button>
         </div>
 
-        <!-- RGB Section -->
-        <div class="color-section">
-            <h4>RGB</h4>
-            <div style="display: flex; justify-content: space-around; margin-bottom: 12px;">
-                <span style="color:red">Red: <strong id="valRed">0</strong></span>
-                <span style="color:green">Green: <strong id="valGreen">0</strong></span>
-                <span style="color:blue">Blue: <strong id="valBlue">255</strong></span>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <input oninput="colorSandbox.updateSandboxColor(this.value, undefined, undefined)"
-                    onchange="colorSandbox.updateSandboxColor(this.value, undefined, undefined)" type="range"
-                    id="slideRed" name="slideRed" min="0" max="255">
-                <input oninput="colorSandbox.updateSandboxColor(undefined, this.value, undefined)"
-                    onchange="colorSandbox.updateSandboxColor(undefined, this.value, undefined)" type="range"
-                    id="slideGreen" name="slideGreen" min="0" max="255">
-                <input oninput="colorSandbox.updateSandboxColor(undefined, undefined, this.value)"
-                    onchange="colorSandbox.updateSandboxColor(undefined, undefined, this.value)" type="range"
-                    id="slideBlue" name="slideBlue" min="0" max="255">
-            </div>
+        <div id="trainingStats" class="training-stats hidden" style="margin-bottom: 15px; text-align: center;">
+            <span>Score: <strong id="score">0</strong></span>
+            <span>Streak: <strong id="streak">0</strong> 🔥</span>
         </div>
 
-        <!-- HSL Section -->
-        <div class="color-section">
-            <h4>HSL</h4>
-            <div style="display: flex; justify-content: space-around; margin-bottom: 12px; text-align: center;">
-                <span>Hue<br><strong id="valHue">0</strong>deg</span>
-                <span>Saturation<br><strong id="valSat">0</strong>%</span>
-                <span>Lightness<br><strong id="valLight">0</strong>%</span>
+        <div id="sandboxUI">
+            <div class="mode-header">
+                <h2>Color Sandbox</h2>
+                <p class="mode-description">Explore color spaces and see how RGB and HSL values interact. Use the 2D
+                    picker to visualize relationships between channels.</p>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px;">
-                <input oninput="colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined)"
-                    onchange="colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined)" type="range"
-                    id="slideHue" name="slideHue" min="0" max="360">
-                <input oninput="colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined)"
-                    onchange="colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined)" type="range"
-                    id="slideSat" name="slideSat" min="0" max="100">
-                <input oninput="colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value)"
-                    onchange="colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value)" type="range"
-                    id="slideLight" name="slideLight" min="0" max="100">
-            </div>
-        </div>
 
-        <!-- 2D Color Space Picker Section -->
-        <div class="color-section">
-            <h4>2D Color Space</h4>
-            <div class="mode-selector">
-                <label for="pickerMode">Mode:</label>
-                <select id="pickerMode" onchange="colorSandbox.setPickerMode(this.value)">
-                    <option value="sat-light">Saturation × Lightness</option>
-                    <option value="hue-sat">Hue × Saturation</option>
-                    <option value="hue-light">Hue × Lightness</option>
-                    <option value="red-green">Red × Green</option>
-                    <option value="red-blue">Red × Blue</option>
-                    <option value="green-blue">Green × Blue</option>
-                </select>
-            </div>
-            <div class="picker-container">
-                <div class="picker-wrapper">
-                    <div class="picker-canvas-container">
-                        <canvas id="slPicker" width="300" height="300"></canvas>
-                        <div id="pickerCrosshair" class="picker-crosshair"></div>
-                        <!-- Dynamic Axis labels -->
-                        <div id="axisLabelLeft" class="axis-label axis-label-left">Lightness</div>
-                        <div id="axisLabelBottom" class="axis-label axis-label-bottom">Saturation</div>
-                        <!-- Axis values -->
-                        <div id="axisValueTop" class="axis-value axis-value-top">100%</div>
-                        <div class="axis-value axis-value-bottom-left">0%</div>
-                        <div id="axisValueBottomRight" class="axis-value axis-value-bottom-right">100%</div>
-                        <div id="axisValueLeftTop" class="axis-value axis-value-left-top">L</div>
-                        <div class="axis-value axis-value-left-bottom">0%</div>
-                    </div>
-                </div>
-                <!-- Horizontal Fixed Component Slider -->
-                <div class="fixed-slider-container">
-                    <div id="fixedSliderLabel" class="fixed-slider-label">Hue</div>
-                    <input type="range" id="slideFixed2d" min="0" max="360"
-                        oninput="colorSandbox.handleFixedSliderChange(this.value)"
-                        onchange="colorSandbox.handleFixedSliderChange(this.value)">
-                    <div class="fixed-slider-value"><span id="valFixed2d">0</span><span id="valFixed2dUnit">°</span>
+            <!-- Color Swatch and Values Display (Sticky Header) -->
+            <div class="color-header">
+                <!-- Unified overlay version -->
+                <div id="swatchOverlay" class="swatch-overlay-container" style="background: rgb(0, 0, 255);">
+                    <div class="swatch-overlay-values">
+                        <h2 id="valRgb" class="code">rgb(0 0 255)</h2>
+                        <h2 id="valHex" class="code">#0000ff</h2>
+                        <h2 id="valHsl" class="code">hsl(240deg 100% 50%)</h2>
                     </div>
                 </div>
             </div>
+
+            <!-- RGB Section -->
+            <div class="color-section">
+                <h4>RGB</h4>
+                <div style="display: flex; justify-content: space-around; margin-bottom: 12px;">
+                    <span style="color:red">Red: <strong id="valRed">0</strong></span>
+                    <span style="color:green">Green: <strong id="valGreen">0</strong></span>
+                    <span style="color:blue">Blue: <strong id="valBlue">255</strong></span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <input oninput="colorSandbox.updateSandboxColor(this.value, undefined, undefined)"
+                        onchange="colorSandbox.updateSandboxColor(this.value, undefined, undefined)" type="range"
+                        id="slideRed" name="slideRed" min="0" max="255">
+                    <input oninput="colorSandbox.updateSandboxColor(undefined, this.value, undefined)"
+                        onchange="colorSandbox.updateSandboxColor(undefined, this.value, undefined)" type="range"
+                        id="slideGreen" name="slideGreen" min="0" max="255">
+                    <input oninput="colorSandbox.updateSandboxColor(undefined, undefined, this.value)"
+                        onchange="colorSandbox.updateSandboxColor(undefined, undefined, this.value)" type="range"
+                        id="slideBlue" name="slideBlue" min="0" max="255">
+                </div>
+            </div>
+
+            <!-- HSL Section -->
+            <div class="color-section">
+                <h4>HSL</h4>
+                <div style="display: flex; justify-content: space-around; margin-bottom: 12px; text-align: center;">
+                    <span>Hue<br><strong id="valHue">0</strong>deg</span>
+                    <span>Saturation<br><strong id="valSat">0</strong>%</span>
+                    <span>Lightness<br><strong id="valLight">0</strong>%</span>
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <input oninput="colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined)"
+                        onchange="colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined)" type="range"
+                        id="slideHue" name="slideHue" min="0" max="360">
+                    <input oninput="colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined)"
+                        onchange="colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined)" type="range"
+                        id="slideSat" name="slideSat" min="0" max="100">
+                    <input oninput="colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value)"
+                        onchange="colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value)" type="range"
+                        id="slideLight" name="slideLight" min="0" max="100">
+                </div>
+            </div>
+
+            <!-- 2D Color Space Picker Section -->
+            <div class="color-section">
+                <h4>2D Color Space</h4>
+                <div class="mode-selector">
+                    <label for="pickerMode">Mode:</label>
+                    <select id="pickerMode" onchange="colorSandbox.setPickerMode(this.value)">
+                        <option value="sat-light">Saturation × Lightness</option>
+                        <option value="hue-sat">Hue × Saturation</option>
+                        <option value="hue-light">Hue × Lightness</option>
+                        <option value="red-green">Red × Green</option>
+                        <option value="red-blue">Red × Blue</option>
+                        <option value="green-blue">Green × Blue</option>
+                    </select>
+                </div>
+                <div class="picker-container">
+                    <div class="picker-wrapper">
+                        <div class="picker-canvas-container">
+                            <canvas id="slPicker" width="300" height="300"></canvas>
+                            <div id="pickerCrosshair" class="picker-crosshair"></div>
+                            <!-- Dynamic Axis labels -->
+                            <div id="axisLabelLeft" class="axis-label axis-label-left">Lightness</div>
+                            <div id="axisLabelBottom" class="axis-label axis-label-bottom">Saturation</div>
+                            <!-- Axis values -->
+                            <div id="axisValueTop" class="axis-value axis-value-top">100%</div>
+                            <div class="axis-value axis-value-bottom-left">0%</div>
+                            <div id="axisValueBottomRight" class="axis-value axis-value-bottom-right">100%</div>
+                            <div id="axisValueLeftTop" class="axis-value axis-value-left-top">L</div>
+                            <div class="axis-value axis-value-left-bottom">0%</div>
+                        </div>
+                    </div>
+                    <!-- Horizontal Fixed Component Slider -->
+                    <div class="fixed-slider-container">
+                        <div id="fixedSliderLabel" class="fixed-slider-label">Hue</div>
+                        <input type="range" id="slideFixed2d" min="0" max="360"
+                            oninput="colorSandbox.handleFixedSliderChange(this.value)"
+                            onchange="colorSandbox.handleFixedSliderChange(this.value)">
+                        <div class="fixed-slider-value"><span id="valFixed2d">0</span><span id="valFixed2dUnit">°</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nearby Colors Section -->
+            <div class="color-section">
+                <h4>Explore Nearby Colors</h4>
+                <div id="nearbyColors" class="nearby-colors-grid"></div>
+            </div>
+
+            <!-- Hue Value Table Section -->
+            <div class="color-value-table-section">
+                <h3>Hue</h3>
+                <table class="color-value-table" id="hueTable">
+                    <thead>
+                        <tr>
+                            <th class="swatch-cell"></th>
+                            <th class="value-cell">Hue</th>
+                            <th>Hex</th>
+                            <th>Rgb</th>
+                            <th>Hsl</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hueTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Saturation Value Table Section -->
+            <div class="color-value-table-section">
+                <h3>Saturation</h3>
+                <table class="color-value-table" id="saturationTable">
+                    <thead>
+                        <tr>
+                            <th class="swatch-cell"></th>
+                            <th class="value-cell">Sat</th>
+                            <th>Hex</th>
+                            <th>Rgb</th>
+                            <th>Hsl</th>
+                        </tr>
+                    </thead>
+                    <tbody id="saturationTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Lightness Value Table Section -->
+            <div class="color-value-table-section">
+                <h3>Lightness</h3>
+                <table class="color-value-table" id="lightnessTable">
+                    <thead>
+                        <tr>
+                            <th class="swatch-cell"></th>
+                            <th class="value-cell">Light</th>
+                            <th>Hex</th>
+                            <th>Rgb</th>
+                            <th>Hsl</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lightnessTableBody"></tbody>
+                </table>
+            </div>
         </div>
 
-        <!-- Nearby Colors Section -->
-        <div class="color-section">
-            <h4>Explore Nearby Colors</h4>
-            <div id="nearbyColors" class="nearby-colors-grid"></div>
+        <!-- Mode 1: Code from Swatches -->
+        <div id="codeFromSwatchesUI" class="training-ui hidden">
+            <div class="mode-header">
+                <h2>Code to Swatch</h2>
+                <p class="mode-description">Identify the physical color that matches the displayed code. A great way to
+                    build intuition for hex and RGB values.</p>
+            </div>
+            <div class="game-settings-bar">
+                <div class="setting-group">
+                    <label for="swatchGameFormat">Format:</label>
+                    <select id="swatchGameFormat" onchange="colorTrainer.resetRound()">
+                        <option value="mixed">Mixed</option>
+                        <option value="rgb" selected>RGB</option>
+                        <option value="hex">Hex</option>
+                        <option value="hsl">HSL</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="swatchGameRetries">Retries:</label>
+                    <input type="number" id="swatchGameRetries" value="0" min="0" max="1" style="width: 50px;">
+                </div>
+            </div>
+
+            <div class="target-code-container">
+                <h3 id="targetCodeDisplay" class="code">#FF5722</h3>
+            </div>
+            <div class="swatch-options-grid" id="swatchOptions">
+                <!-- Generated swatch buttons -->
+            </div>
         </div>
 
-        <!-- Hue Value Table Section -->
-        <div class="color-value-table-section">
-            <h3>Hue</h3>
-            <table class="color-value-table" id="hueTable">
-                <thead>
-                    <tr>
-                        <th class="swatch-cell"></th>
-                        <th class="value-cell">Hue</th>
-                        <th>Hex</th>
-                        <th>Rgb</th>
-                        <th>Hsl</th>
-                    </tr>
-                </thead>
-                <tbody id="hueTableBody"></tbody>
-            </table>
+        <!-- Mode 2: Swatch to Code -->
+        <div id="swatchToCodeUI" class="training-ui hidden">
+            <div class="mode-header">
+                <h2>Swatch to Code</h2>
+                <p class="mode-description">Recreate the target color by adjusting the sliders. Focus on decomposing the
+                    color into its components.</p>
+            </div>
+            <div id="targetSwatch" class="target-swatch-large"></div>
+
+            <div class="code-input-container" style="flex-direction: column; align-items: stretch; gap: 15px;">
+                <div style="text-align: center;">
+                    <select id="codeFormat" onchange="colorTrainer.updateSwatchToCodeSliders()">
+                        <option value="rgb">RGB</option>
+                        <option value="hsl">HSL</option>
+                    </select>
+                </div>
+
+                <div id="stcSliders">
+                    <!-- Sliders injected by JS or hardcoded here? JS is better for switching labels. 
+                         For now, hardcode 3 generic sliders and update labels via JS -->
+                    <div class="training-slider-row">
+                        <label id="stcLabel1">R</label>
+                        <input type="range" id="stcSlider1" min="0" max="255" value="0"
+                            oninput="document.getElementById('stcValue1').innerText = this.value">
+                        <span id="stcValue1" class="slider-val-display">0</span>
+                    </div>
+                    <div class="training-slider-row">
+                        <label id="stcLabel2">G</label>
+                        <input type="range" id="stcSlider2" min="0" max="255" value="0"
+                            oninput="document.getElementById('stcValue2').innerText = this.value">
+                        <span id="stcValue2" class="slider-val-display">0</span>
+                    </div>
+                    <div class="training-slider-row">
+                        <label id="stcLabel3">B</label>
+                        <input type="range" id="stcSlider3" min="0" max="255" value="0"
+                            oninput="document.getElementById('stcValue3').innerText = this.value">
+                        <span id="stcValue3" class="slider-val-display">0</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="submitCode" class="action-btn" style="flex: 1;">Submit Guess</button>
+                    <button id="nextSwatchToCode" class="action-btn next-btn hidden"
+                        style="flex: 1; background: #64748b;">Next Color</button>
+                </div>
+            </div>
+            <div id="distanceFeedback" class="distance-feedback hidden"></div>
         </div>
 
-        <!-- Saturation Value Table Section -->
-        <div class="color-value-table-section">
-            <h3>Saturation</h3>
-            <table class="color-value-table" id="saturationTable">
-                <thead>
-                    <tr>
-                        <th class="swatch-cell"></th>
-                        <th class="value-cell">Sat</th>
-                        <th>Hex</th>
-                        <th>Rgb</th>
-                        <th>Hsl</th>
-                    </tr>
-                </thead>
-                <tbody id="saturationTableBody"></tbody>
-            </table>
-        </div>
+        <!-- Mode 3: Channel Isolation -->
+        <div id="channelIsolationUI" class="training-ui hidden">
+            <div class="mode-header">
+                <h2>Channel Isolation</h2>
+                <p class="mode-description">Isolate specific color channels to train your eye. Guess the value of just
+                    one property at a time.</p>
+            </div>
+            <div class="game-settings-bar">
+                <div class="setting-group">
+                    <label for="channelGameFormat">Format:</label>
+                    <select id="channelGameFormat" onchange="colorTrainer.resetRound()">
+                        <option value="mixed">Mixed</option>
+                        <option value="rgb">RGB (All)</option>
+                        <option value="hsl">HSL (All)</option>
+                        <option value="red">Red Only</option>
+                        <option value="green">Green Only</option>
+                        <option value="blue">Blue Only</option>
+                        <option value="hue">Hue Only</option>
+                        <option value="saturation">Saturation Only</option>
+                        <option value="lightness" selected>Lightness Only</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label for="channelGameRetries">Retries:</label>
+                    <input type="number" id="channelGameRetries" value="0" min="0" max="1" style="width: 50px;">
+                </div>
+            </div>
 
-        <!-- Lightness Value Table Section -->
-        <div class="color-value-table-section">
-            <h3>Lightness</h3>
-            <table class="color-value-table" id="lightnessTable">
-                <thead>
-                    <tr>
-                        <th class="swatch-cell"></th>
-                        <th class="value-cell">Light</th>
-                        <th>Hex</th>
-                        <th>Rgb</th>
-                        <th>Hsl</th>
-                    </tr>
-                </thead>
-                <tbody id="lightnessTableBody"></tbody>
-            </table>
+            <div id="channelTargetSwatch" class="target-swatch-large"></div>
+            <h3 id="channelQuestion">Guess the Red value</h3>
+
+            <div class="code-input-container" style="flex-direction: column; gap: 10px;">
+                <div class="training-slider-row">
+                    <input type="range" id="channelSlider" class="channel-slider" min="0" max="255" value="0"
+                        style="width: 100%;" oninput="document.getElementById('channelValue').innerText = this.value">
+                    <span id="channelValue" class="slider-val-display"
+                        style="font-size: 1.2rem; font-weight: bold;">0</span>
+                </div>
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <button id="submitChannel" class="action-btn" style="flex: 1;">Submit</button>
+                    <button id="nextChannel" class="action-btn next-btn hidden"
+                        style="flex: 1; background: #64748b;">Next Color</button>
+                </div>
+            </div>
+            <div id="channelFeedback" class="distance-feedback hidden"></div>
         </div>
     </div>
 
+    <script src="ColorSandbox.js"></script>
+    <script src="ColorTrainer.js"></script>
     <script src="script.js"></script>
 </body>
 
