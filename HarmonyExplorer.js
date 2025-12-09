@@ -340,16 +340,19 @@ const HarmonyExplorerMixin = {
             const x = cx + Math.cos(angleRad) * dist;
             const y = cy + Math.sin(angleRad) * dist;
 
+            // Check if this is the base color (by label, not index)
+            const isBase = hConf.label === 'Base';
+
             ctx.beginPath();
             ctx.arc(x, y, 6, 0, 2 * Math.PI);
-            ctx.fillStyle = index === 0 ? "#fff" : `hsl(${hConf.h}, ${hConf.s}%, ${hConf.l}%)`;
+            ctx.fillStyle = isBase ? "#fff" : `hsl(${hConf.h}, ${hConf.s}%, ${hConf.l}%)`;
             ctx.strokeStyle = "#000";
             ctx.lineWidth = 2;
             ctx.fill();
             ctx.stroke();
 
-            // Connector line to center for base
-            if (index === 0) {
+            // Outer ring highlight for base color
+            if (isBase) {
                 ctx.beginPath();
                 ctx.arc(x, y, 9, 0, 2 * Math.PI);
                 ctx.strokeStyle = "#fff";
