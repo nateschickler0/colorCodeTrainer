@@ -72,16 +72,13 @@
                     <span style="color:blue">Blue: <strong id="valBlue">255</strong></span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <input
-                        oninput="throttledSliderUpdate('red', () => colorSandbox.updateSandboxColor(this.value, undefined, undefined))"
+                    <input oninput="colorSandbox.updateSandboxColor(this.value, undefined, undefined)"
                         onchange="colorSandbox.updateSandboxColor(this.value, undefined, undefined)" type="range"
                         id="slideRed" name="slideRed" min="0" max="255">
-                    <input
-                        oninput="throttledSliderUpdate('green', () => colorSandbox.updateSandboxColor(undefined, this.value, undefined))"
+                    <input oninput="colorSandbox.updateSandboxColor(undefined, this.value, undefined)"
                         onchange="colorSandbox.updateSandboxColor(undefined, this.value, undefined)" type="range"
                         id="slideGreen" name="slideGreen" min="0" max="255">
-                    <input
-                        oninput="throttledSliderUpdate('blue', () => colorSandbox.updateSandboxColor(undefined, undefined, this.value))"
+                    <input oninput="colorSandbox.updateSandboxColor(undefined, undefined, this.value)"
                         onchange="colorSandbox.updateSandboxColor(undefined, undefined, this.value)" type="range"
                         id="slideBlue" name="slideBlue" min="0" max="255">
                 </div>
@@ -96,16 +93,13 @@
                     <span>Lightness<br><strong id="valLight">0</strong>%</span>
                 </div>
                 <div style="display: flex; flex-direction: column; gap: 8px;">
-                    <input
-                        oninput="throttledSliderUpdate('hue', () => colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined))"
+                    <input oninput="colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined)"
                         onchange="colorSandbox.updateSandboxColorHsl(this.value, undefined, undefined)" type="range"
                         id="slideHue" name="slideHue" min="0" max="360">
-                    <input
-                        oninput="throttledSliderUpdate('sat', () => colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined))"
+                    <input oninput="colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined)"
                         onchange="colorSandbox.updateSandboxColorHsl(undefined, this.value, undefined)" type="range"
                         id="slideSat" name="slideSat" min="0" max="100">
-                    <input
-                        oninput="throttledSliderUpdate('light', () => colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value))"
+                    <input oninput="colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value)"
                         onchange="colorSandbox.updateSandboxColorHsl(undefined, undefined, this.value)" type="range"
                         id="slideLight" name="slideLight" min="0" max="100">
                 </div>
@@ -123,7 +117,7 @@
                 <div class="fixed-slider-container" style="max-width: 325px; margin: 10px auto;">
                     <div id="harmonyFixedLabel" class="fixed-slider-label">Lightness</div>
                     <input type="range" id="harmonyFixedSlider" min="0" max="100"
-                        oninput="throttledSliderUpdate('harmonyFixed', () => colorSandbox.handleHarmonyFixedSliderChange(this.value))"
+                        oninput="colorSandbox.handleHarmonyFixedSliderChange(this.value)"
                         onchange="colorSandbox.handleHarmonyFixedSliderChange(this.value)">
                     <div class="fixed-slider-value"><span id="valHarmonyFixed">50</span><span
                             id="valHarmonyFixedUnit">%</span></div>
@@ -193,7 +187,7 @@
                     <div class="fixed-slider-container">
                         <div id="fixedSliderLabel" class="fixed-slider-label">Hue</div>
                         <input type="range" id="slideFixed2d" min="0" max="360"
-                            oninput="throttledSliderUpdate('fixed2d', () => colorSandbox.handleFixedSliderChange(this.value))"
+                            oninput="colorSandbox.handleFixedSliderChange(this.value)"
                             onchange="colorSandbox.handleFixedSliderChange(this.value)">
                         <div class="fixed-slider-value"><span id="valFixed2d">0</span><span id="valFixed2dUnit">°</span>
                         </div>
