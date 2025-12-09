@@ -15,6 +15,9 @@ class ColorSandbox {
         this.harmonyMode = 'tetradic';
         this.harmonyWheelMode = 'saturation'; // 'saturation' or 'lightness'
 
+        // Sync dropdown elements to match JS defaults (fixes browser form state preservation on refresh)
+        this.syncDropdownsToState();
+
         this.initHarmonyWheel();
         this.updateSandboxColor(r, g, b);
 
@@ -23,6 +26,21 @@ class ColorSandbox {
             const btn = document.getElementById('eyedropperBtn');
             if (btn) btn.classList.add('hidden');
         }
+    }
+
+    /**
+     * Synchronizes dropdown select elements with JavaScript state
+     * (Fixes browser form state preservation on refresh)
+     */
+    syncDropdownsToState() {
+        const harmonyModeSelect = document.getElementById('harmonyMode');
+        if (harmonyModeSelect) harmonyModeSelect.value = this.harmonyMode;
+
+        const harmonyWheelModeSelect = document.getElementById('harmonyWheelMode');
+        if (harmonyWheelModeSelect) harmonyWheelModeSelect.value = this.harmonyWheelMode;
+
+        const pickerModeSelect = document.getElementById('pickerMode');
+        if (pickerModeSelect) pickerModeSelect.value = this.pickerMode;
     }
 
     /**
