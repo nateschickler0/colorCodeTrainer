@@ -90,7 +90,7 @@ function switchMode(mode) {
     if (mode === 'sandbox') {
         sandboxUI.classList.remove('hidden');
         trainingStats.classList.add('hidden');
-        colorTrainer.updateUIForMode(); // Hides all training UIs
+        colorTrainer.setMode('sandbox'); // Updates internal state and hides training UIs
     } else {
         sandboxUI.classList.add('hidden');
         trainingStats.classList.remove('hidden');

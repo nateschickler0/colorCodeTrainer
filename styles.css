@@ -92,6 +92,55 @@ h2.code {
     /* text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); Remove text shadow for cleaner look with inverse color */
 }
 
+/* Eyedropper Button */
+.eyedropper-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    color: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, transform 0.1s ease;
+    backdrop-filter: blur(4px);
+}
+
+.eyedropper-btn:hover {
+    background: rgba(255, 255, 255, 0.4);
+    transform: translateY(-50%) scale(1.05);
+}
+
+.eyedropper-btn:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.eyedropper-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Hide eyedropper on unsupported browsers */
+.eyedropper-btn.hidden {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .eyedropper-btn {
+        right: 8px;
+        padding: 6px;
+    }
+
+    .eyedropper-btn svg {
+        width: 20px;
+        height: 20px;
+    }
+}
 
 /* Gradient slider styles */
 input[type="range"] {
@@ -980,4 +1029,85 @@ input[type="range"]::-moz-range-thumb:hover {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* Color Harmony Explorer */
+.harmony-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+    margin-top: 16px;
+}
+
+.harmony-swatch-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    width: 150px;
+}
+
+.harmony-swatch-wrapper:hover {
+    transform: translateY(-4px);
+}
+
+.harmony-swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.harmony-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+.harmony-values {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+}
+
+.harmony-values .code {
+    font-size: 12px;
+    color: #444;
+}
+
+@media (max-width: 480px) {
+    .harmony-swatch {
+        width: 50px;
+        height: 50px;
+    }
+
+    .harmony-label {
+        font-size: 10px;
+    }
+}
+
+.harmony-wheel-container {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+}
+
+#harmonyWheel {
+    border-radius: 50%;
+    cursor: grab;
+    touch-action: none;
+}
+
+#harmonyWheel:active {
+    cursor: grabbing;
 }

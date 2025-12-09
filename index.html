@@ -29,6 +29,7 @@
         <div id="trainingStats" class="training-stats hidden" style="margin-bottom: 15px; text-align: center;">
             <span>Score: <strong id="score">0</strong></span>
             <span>Streak: <strong id="streak">0</strong> 🔥</span>
+            <span>Max Streak: <strong id="maxStreak">0</strong> 🏆</span>
         </div>
 
         <div id="sandboxUI">
@@ -47,6 +48,18 @@
                         <h2 id="valHex" class="code">#0000ff</h2>
                         <h2 id="valHsl" class="code">hsl(240deg 100% 50%)</h2>
                     </div>
+                    <!-- Eyedropper button -->
+                    <button id="eyedropperBtn" class="eyedropper-btn" onclick="colorSandbox.pickColorFromScreen()"
+                        title="Pick color from screen">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m2 22 1-1h3l9-9"></path>
+                            <path d="M3 21v-3l9-9"></path>
+                            <path
+                                d="m15 6 3.4-3.4a2.1 2.1 0 1 1 3 3L18 9l.4.4a2.1 2.1 0 1 1-3 3l-3.8-3.8a2.1 2.1 0 1 1 3-3l.4.4Z">
+                            </path>
+                        </svg>
+                    </button>
                 </div>
             </div>
 
@@ -92,10 +105,58 @@
                 </div>
             </div>
 
+            <!-- Color Harmony Explorer Section -->
+            <div class="color-section">
+                <h4>Color Harmony Explorer</h4>
+
+                <div class="harmony-wheel-container">
+                    <canvas id="harmonyWheel" width="325" height="325"></canvas>
+                </div>
+
+                <!-- Fixed Slider for Harmony Wheel -->
+                <div class="fixed-slider-container" style="max-width: 325px; margin: 10px auto;">
+                    <div id="harmonyFixedLabel" class="fixed-slider-label">Lightness</div>
+                    <input type="range" id="harmonyFixedSlider" min="0" max="100"
+                        oninput="colorSandbox.handleHarmonyFixedSliderChange(this.value)"
+                        onchange="colorSandbox.handleHarmonyFixedSliderChange(this.value)">
+                    <div class="fixed-slider-value"><span id="valHarmonyFixed">50</span><span
+                            id="valHarmonyFixedUnit">%</span></div>
+                </div>
+
+                <div class="mode-selector-group"
+                    style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px; align-items: center;">
+                    <div class="mode-selector" style="margin: 0;">
+                        <label for="harmonyMode">Harmony:</label>
+                        <select id="harmonyMode" onchange="colorSandbox.setHarmonyMode(this.value)">
+                            <option value="complementary">Complementary</option>
+                            <option value="analogous">Analogous</option>
+                            <option value="triadic">Triadic</option>
+                            <option value="tetradic" selected>Tetradic</option>
+                            <option value="split-complementary">Split Complementary</option>
+                            <option value="monochromatic">Monochromatic</option>
+                        </select>
+                    </div>
+
+                    <div class="mode-selector" style="margin: 0;">
+                        <label for="harmonyWheelMode">Wheel Mode:</label>
+                        <select id="harmonyWheelMode" onchange="colorSandbox.setHarmonyWheelMode(this.value)">
+                            <option value="saturation">Hue × Saturation</option>
+                            <option value="lightness">Hue × Lightness</option>
+                        </select>
+                    </div>
+                </div>
+
+                <p id="harmonyDescription" class="mode-description"
+                    style="text-align: center; font-size: 14px; margin-top: 10px; margin-bottom: 10px; color: #666; max-width: 400px; margin-left: auto; margin-right: auto;">
+                </p>
+
+                <div id="harmonyContainer" class="harmony-container"></div>
+            </div>
+
             <!-- 2D Color Space Picker Section -->
             <div class="color-section">
                 <h4>2D Color Space</h4>
-                <div class="mode-selector">
+                <div class="mode-selector" style="justify-content: center;">
                     <label for="pickerMode">Mode:</label>
                     <select id="pickerMode" onchange="colorSandbox.setPickerMode(this.value)">
                         <option value="sat-light">Saturation × Lightness</option>
@@ -320,9 +381,13 @@
         </div>
     </div>
 
-    <script src="ColorSandbox.js?v=1"></script>
-    <script src="ColorTrainer.js?v=1"></script>
-    <script src="script.js?v=1"></script>
+    <script src="colorUtils.js"></script>
+    <script src="TwoDPicker.js"></script>
+    <script src="HarmonyExplorer.js"></script>
+    <script src="ColorTables.js"></script>
+    <script src="ColorSandbox.js"></script>
+    <script src="ColorTrainer.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

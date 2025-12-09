@@ -6,7 +6,14 @@ class ColorTrainer {
         this.targetColor = null; // {h, s, l, r, g, b}
         this.options = []; // For multiple choice
         this.currentRetries = 0;
-        this.maxStreak = parseInt(localStorage.getItem('colorTrainerMaxStreak') || '0');
+
+        // Load max streaks from local storage
+        try {
+            this.maxStreaks = JSON.parse(localStorage.getItem('colorTrainerMaxStreaks') || '{}');
+        } catch (e) {
+            console.error('Failed to parse max streaks', e);
+            this.maxStreaks = {};
+        }
 
         // Bind methods
         this.handleOptionClick = this.handleOptionClick.bind(this);
@@ -20,6 +27,7 @@ class ColorTrainer {
 
     setMode(mode) {
         this.currentMode = mode;
+        this.streak = 0; // Reset streak on mode change
         this.resetRound();
         this.updateUIForMode();
     }
@@ -288,9 +296,11 @@ class ColorTrainer {
     handleSuccess(element) {
         this.score += 10 + (this.streak * 2);
         this.streak++;
-        if (this.streak > this.maxStreak) {
-            this.maxStreak = this.streak;
-            localStorage.setItem('colorTrainerMaxStreak', this.maxStreak);
+
+        const currentMax = this.maxStreaks[this.currentMode] || 0;
+        if (this.streak > currentMax) {
+            this.maxStreaks[this.currentMode] = this.streak;
+            localStorage.setItem('colorTrainerMaxStreaks', JSON.stringify(this.maxStreaks));
         }
 
         this.updateStatsDisplay();
@@ -346,8 +356,11 @@ class ColorTrainer {
     updateStatsDisplay() {
         const scoreEl = document.getElementById('score');
         const streakEl = document.getElementById('streak');
+        const maxStreakEl = document.getElementById('maxStreak');
+
         if (scoreEl) scoreEl.textContent = this.score;
         if (streakEl) streakEl.textContent = this.streak;
+        if (maxStreakEl) maxStreakEl.textContent = this.maxStreaks[this.currentMode] || 0;
     }
 
     updateUIForMode() {
