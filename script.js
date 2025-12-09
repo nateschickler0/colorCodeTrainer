@@ -1,3 +1,20 @@
+// Throttle slider updates using requestAnimationFrame
+// This ensures we update at most once per frame (~60fps) while keeping smooth visuals
+const sliderUpdateQueue = new Map();
+function throttledSliderUpdate(key, updateFn) {
+    sliderUpdateQueue.set(key, updateFn);
+    if (!throttledSliderUpdate._pending) {
+        throttledSliderUpdate._pending = true;
+        requestAnimationFrame(() => {
+            throttledSliderUpdate._pending = false;
+            for (const fn of sliderUpdateQueue.values()) {
+                fn();
+            }
+            sliderUpdateQueue.clear();
+        });
+    }
+}
+
 // ColorSandbox initialization
 const initH = Math.floor(Math.random() * 360);
 const initS = Math.floor(Math.random() * 20) + 70; // 70-90% Saturation
@@ -11,6 +28,8 @@ colorSandbox.updateSandboxColor(initR, initG, initB, initH, initS, initL);
 // Set up 2D picker interaction
 const slPicker = $("#slPicker");
 let isDragging = false;
+let pickerRafPending = false;
+let pendingPickerEvent = null;
 
 slPicker.addEventListener("mousedown", (e) => {
     isDragging = true;
@@ -19,12 +38,22 @@ slPicker.addEventListener("mousedown", (e) => {
 
 document.addEventListener("mousemove", (e) => {
     if (isDragging) {
-        colorSandbox.handlePickerInteraction(e);
+        pendingPickerEvent = e;
+        if (!pickerRafPending) {
+            pickerRafPending = true;
+            requestAnimationFrame(() => {
+                pickerRafPending = false;
+                if (pendingPickerEvent) {
+                    colorSandbox.handlePickerInteraction(pendingPickerEvent);
+                }
+            });
+        }
     }
 });
 
 document.addEventListener("mouseup", () => {
     isDragging = false;
+    pendingPickerEvent = null;
 });
 
 // Touch support for mobile
@@ -35,7 +64,16 @@ slPicker.addEventListener("touchstart", (e) => {
 
 slPicker.addEventListener("touchmove", (e) => {
     e.preventDefault();
-    colorSandbox.handlePickerInteraction(e.touches[0]);
+    pendingPickerEvent = e.touches[0];
+    if (!pickerRafPending) {
+        pickerRafPending = true;
+        requestAnimationFrame(() => {
+            pickerRafPending = false;
+            if (pendingPickerEvent) {
+                colorSandbox.handlePickerInteraction(pendingPickerEvent);
+            }
+        });
+    }
 });
 
 // Debounce function
