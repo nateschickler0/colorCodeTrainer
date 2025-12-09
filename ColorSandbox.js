@@ -17,6 +17,36 @@ class ColorSandbox {
 
         this.initHarmonyWheel();
         this.updateSandboxColor(r, g, b);
+
+        // Hide eyedropper button if not supported
+        if (!window.EyeDropper) {
+            const btn = document.getElementById('eyedropperBtn');
+            if (btn) btn.classList.add('hidden');
+        }
+    }
+
+    /**
+     * Opens the native EyeDropper to pick a color from the screen
+     */
+    async pickColorFromScreen() {
+        if (!window.EyeDropper) {
+            console.warn('EyeDropper API not supported');
+            return;
+        }
+
+        try {
+            const eyeDropper = new EyeDropper();
+            const result = await eyeDropper.open();
+            // result.sRGBHex is in format "#rrggbb"
+            const hex = result.sRGBHex;
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            this.updateSandboxColor(r, g, b);
+        } catch (e) {
+            // User cancelled or error occurred
+            console.log('EyeDropper cancelled or error:', e);
+        }
     }
 
     updateSandboxColorHsl(
